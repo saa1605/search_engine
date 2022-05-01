@@ -1,0 +1,73 @@
+from collections import Counter
+from src.data_processing import clean_entry, read_stopwords_file, remove_stopwords
+import numpy as np
+import json 
+
+def calculate_euclidian_normalized_frequency_denominator(processed_document):
+    word_counts = Counter(processed_document)
+    
+    return denom 
+
+def create_inverted_index(corpus, doc_ids):
+    '''Created inverted index for all unique terms with (document_ids, term_frequncies) in posting list'''
+    # Create empty inverted index 
+    inverted_index = {}
+    document_lengths = {}
+
+    # Read stopwords from a stopword file 
+    stopwords_list = read_stopwords_file('stopwords.txt')
+
+    # Iterate over the entire courpus of list of documents 
+    for i, document in enumerate(corpus):
+        doc_id = doc_ids[i]
+
+        # Clean document 
+        document = clean_entry(document)
+
+        # Tokenize document 
+        tokens = document.split(" ")
+
+        # Lowercase all tokens 
+        tokens = [token.lower() for token in tokens]
+
+        # Remove stopwords from document 
+        tokens = remove_stopwords(tokens, stopwords_list)
+
+        # Calculate and store document lengths 
+        document_lengths[doc_id] = len(tokens)
+
+        # Create a dictionary which stores term frequencies 
+        term_frequencies = Counter(tokens)
+
+        # Euclidian normalize the term frequencies 
+        denom = np.sum(np.array([(count)**2 for count in term_frequencies.values()]))
+        denom = np.sqrt(denom)
+        for term in term_frequencies.keys():
+            term_frequencies[term] /= denom
+
+        # Iterate over all unique terms 
+        for term in term_frequencies.keys():
+            # If the term already exists in inverted index, append the current (doc_id, term_frequency) to the postings list
+            if term in inverted_index:
+                inverted_index[term].append((doc_id, term_frequencies[term]))
+            # If the term does not exist in inverted index, create a entry with the term as key nd add (doc_id, term_frequency) to the posting list
+            else:
+                inverted_index[term] = [(doc_id, term_frequencies[term])]
+    return inverted_index, document_lengths
+
+def calculate_idf(inverted_index, num_documents):
+    '''Calculate the inverse document frequency for all unique terms in the vocabulary'''
+    # Create empty idf dictionary 
+    idf = {}
+
+    # Iterate over all terms in inverted index 
+    for item in inverted_index.keys():
+        # IDF_t = log( N / number_of_documents_t_appears_in)
+        idf[item] = np.log(num_documents/(len(inverted_index[item])))
+    
+    return idf 
+
+def save_inverted_index(inverted_index):
+    '''Save the inverted index to a json file'''
+    with open('inverted_index.json', 'w') as j:
+        json.dump(inverted_index, j)
