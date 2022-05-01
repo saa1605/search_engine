@@ -3,23 +3,20 @@ from src.data_processing import clean_entry, read_stopwords_file, remove_stopwor
 import numpy as np
 import json 
 
-def calculate_euclidian_normalized_frequency_denominator(processed_document):
-    word_counts = Counter(processed_document)
-    
-    return denom 
+
 
 def create_inverted_index(corpus, doc_ids):
     '''Created inverted index for all unique terms with (document_ids, term_frequncies) in posting list'''
     # Create empty inverted index 
     inverted_index = {}
-    document_lengths = {}
+    document_lengths = np.zeros(len(corpus))
 
     # Read stopwords from a stopword file 
     stopwords_list = read_stopwords_file('stopwords.txt')
 
     # Iterate over the entire courpus of list of documents 
     for i, document in enumerate(corpus):
-        doc_id = doc_ids[i]
+        doc_id = i
 
         # Clean document 
         document = clean_entry(document)
@@ -41,12 +38,11 @@ def create_inverted_index(corpus, doc_ids):
 
         # Euclidian normalize the term frequencies 
         denom = np.sum(np.array([(count)**2 for count in term_frequencies.values()]))
-        denom = np.sqrt(denom)
-        for term in term_frequencies.keys():
-            term_frequencies[term] /= denom
+        denom = np.sqrt(denom)            
 
         # Iterate over all unique terms 
         for term in term_frequencies.keys():
+            term_frequencies[term] /= denom
             # If the term already exists in inverted index, append the current (doc_id, term_frequency) to the postings list
             if term in inverted_index:
                 inverted_index[term].append((doc_id, term_frequencies[term]))

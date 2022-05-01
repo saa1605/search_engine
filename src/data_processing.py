@@ -2,15 +2,17 @@ import re
 from collections import Counter 
 import numpy as np 
 
-def collect_document_ids(database_file):
+def collect_document_ids(corpus):
     '''collect a single list of document_ids given the database file'''
-    database_file = open(database_file)
-    data = database_file.read()
-    pattern = re.compile("\.I\s\d*\n")
-    ids = re.findall(pattern, data)
-    for i in range(len(ids)):
-        ids[i] = ids[i].split(' ')[-1][:-1] # This split and slicing extracts the numerical document_id
-    return ids
+    document_ids = []
+    for document in corpus: 
+
+        pattern = "\.U\n(.*?)\n"
+        doc_id_find = re.search(pattern, document)
+        if doc_id_find:
+            doc_id = doc_id_find.group(1)
+            document_ids.append(doc_id)
+    return document_ids
 
 
 def split_into_documents(database_file):
@@ -47,6 +49,21 @@ def clean_entry(entry):
     entry = entry.strip()
 
     return entry
+
+def process_query(query):
+    patterns = ['<num>.*\n', '<desc>.*\n', '<.*>']
+    query_id_find = re.search('<num>\sNumber:\s(.+?)\n', query)
+    if query_id_find:
+        query_id = query_id_find.group(1)
+    for pattern in patterns: 
+        query = re.sub(pattern, ' ', query)
+    query = clean_entry(query)
+    query = query.split(' ')
+    query = [q.lower() for q in query]
+    stop_words_list = read_stopwords_file('stopwords.txt')
+    query = remove_stopwords(query, stop_words_list)
+    query = ' '.join(query)
+    return query, query_id
 
 def read_stopwords_file(filename):
     '''Read stopwords from an external file'''
