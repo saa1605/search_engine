@@ -43,7 +43,7 @@ def clean_entry(entry):
     entry = re.sub(' +', ' ', entry)
 
     # Remove isolated small case letters
-    entry = re.sub(r'\s[a-z]\s', ' ', entry)
+    entry = re.sub(r"\b\d+\b *|\b[a-z]\b *","",entry)
 
     # Remove leading and trailing spaces
     entry = entry.strip()
@@ -57,12 +57,21 @@ def process_query(query):
         query_id = query_id_find.group(1)
     for pattern in patterns: 
         query = re.sub(pattern, ' ', query)
-    query = clean_entry(query)
+
+    # Split query to remove stopwords first
     query = query.split(' ')
     query = [q.lower() for q in query]
-    stop_words_list = read_stopwords_file('stopwords.txt')
+    stop_words_list = read_stopwords_file('stop_words_english.txt')
     query = remove_stopwords(query, stop_words_list)
+
+    # join the query again for the cleaning process
     query = ' '.join(query)
+    query = clean_entry(query)
+
+    # Split query into tokens 
+    query = query.split(' ')
+    
+    
     return query, query_id
 
 def read_stopwords_file(filename):
