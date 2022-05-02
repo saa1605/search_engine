@@ -1,4 +1,6 @@
-All python code to be run can be found in the src folder. Please make sure that Python > 3.5 and Numpy is installed before running. 
+All python code to be run can be found in the src folder. Please make sure that Python > 3.5 and Numpy is installed before running.
+
+Put the ohsumed.88-91, query.ohsu.1-63 and qrels.ohsu.88-91 files in a data folder in the main directory.
 
 The folder consists of 5 Python Files
 
