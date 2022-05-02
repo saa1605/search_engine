@@ -113,6 +113,7 @@ def generate_log_string(top_k_docs, query_id, method):
 
 def retrieve_documents(method, corpus, query, inverted_index, idf, doc_ids, norms, Lengths):  
     if method == 'tf-idf':
+        print("here")
         scores = compute_tf_idf_scores(inverted_index, query, idf, doc_ids, norms, Lengths)
         top_k_docs = get_top_k_documents(doc_ids, scores, 50)        
 

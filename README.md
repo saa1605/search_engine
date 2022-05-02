@@ -1,4 +1,4 @@
-All python code to be run can be found in the src folder
+All python code to be run can be found in the src folder. Please make sure that Python > 3.5 and Numpy is installed before running. 
 
 The folder consists of 5 Python Files
 

@@ -38,11 +38,11 @@ def main():
     for query in queries:
         query, query_id = process_query(query)
         top_k_docs = retrieve_documents(method, corpus, query, inverted_index, idf, doc_ids, norms, Lengths)
-        log_string += generate_log_string(top_k_docs, query_id)
+        log_string += generate_log_string(top_k_docs, query_id, method)
 
     print(f"Document Retrieved, Writing to log file")
 
-    with open('../logs/log.txt', 'w') as f:
+    with open('../logs/log_2.txt', 'w') as f:
         f.write(log_string)
 
 if __name__ == '__main__':
